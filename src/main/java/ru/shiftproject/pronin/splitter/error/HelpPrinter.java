@@ -3,7 +3,7 @@ package ru.shiftproject.pronin.splitter.error;
 public class HelpPrinter {
     public static void printHelp() {
         System.out.print("""
-                Инструкция по запуску:
+                Инструкция по запуску
                     В командной строке в папке с jar-файлом введите:
                         "java -jar file-separator-1.0.jar <набор опций и файлов>"
                     Доступные опции:
