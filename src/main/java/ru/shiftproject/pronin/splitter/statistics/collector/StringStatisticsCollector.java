@@ -3,7 +3,6 @@ package ru.shiftproject.pronin.splitter.statistics.collector;
 import ru.shiftproject.pronin.splitter.config.Configuration;
 
 public class StringStatisticsCollector extends StatisticsCollector {
-    private int elementsCount;
     private int minimumLength = Integer.MAX_VALUE;
     private int maximumLength;
 
@@ -12,36 +11,18 @@ public class StringStatisticsCollector extends StatisticsCollector {
     }
 
     @Override
-    public void process(String line) {
-        if (!configuration.shouldPrintStatistics()) {
-            return;
-        }
-
-        elementsCount++;
-
-        if (configuration.isFullStatistics()) {
-            int length = line.length();
-
-            if (length < minimumLength) {
-                minimumLength = length;
-            }
-
-            if (length > maximumLength) {
-                maximumLength = length;
-            }
-        }
+    protected void collectAdditionalStatistics(String line) {
+        int length = line.length();
+        minimumLength = Math.min(minimumLength, length);
+        maximumLength = Math.max(maximumLength, length);
     }
 
     @Override
-    public int getElementsCount() {
-        return elementsCount;
-    }
-
-    public int getMinimumLength() {
-        return elementsCount == 0 ? 0 : minimumLength;
-    }
-
-    public int getMaximumLength() {
-        return maximumLength;
+    protected void appendAdditionalStatistics(StringBuilder stringBuilder) {
+        stringBuilder.append("\t\t\tМинимальная длина: ")
+                .append(minimumLength)
+                .append(SEPARATOR)
+                .append("\t\t\tМаксимальная длина: ")
+                .append(maximumLength);
     }
 }

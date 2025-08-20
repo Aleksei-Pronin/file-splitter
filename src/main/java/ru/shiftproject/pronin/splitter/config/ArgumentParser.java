@@ -63,12 +63,7 @@ public class ArgumentParser {
 
     private int handleOutputPath(String[] args, int index) throws IOException {
         Path outputPath = Paths.get(
-                getNextArgument(
-                        args,
-                        index,
-                        "-o",
-                        "путь к выходной директории"
-                )
+                getNextArgument(args, index, "-o", "путь к выходной директории")
         );
 
         if (Files.exists(outputPath) && !Files.isDirectory(outputPath)) {
@@ -91,12 +86,7 @@ public class ArgumentParser {
 
     private int handlePrefix(String[] args, int index) {
         configuration.setOutputFilePrefix(
-                getNextArgument(
-                        args,
-                        index,
-                        "-p",
-                        "префикс имени файла"
-                )
+                getNextArgument(args, index, "-p", "префикс имени файла")
         );
         return index + 1;
     }

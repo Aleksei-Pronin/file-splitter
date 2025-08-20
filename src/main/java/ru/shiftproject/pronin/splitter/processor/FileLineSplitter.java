@@ -1,7 +1,7 @@
 package ru.shiftproject.pronin.splitter.processor;
 
 import ru.shiftproject.pronin.splitter.datatype.DataType;
-import ru.shiftproject.pronin.splitter.statistics.updater.StatisticsUpdater;
+import ru.shiftproject.pronin.splitter.statistics.StatisticsUpdater;
 
 import java.io.BufferedReader;
 import java.io.IOException;

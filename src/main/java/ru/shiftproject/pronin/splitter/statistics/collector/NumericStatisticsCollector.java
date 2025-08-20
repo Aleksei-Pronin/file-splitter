@@ -6,14 +6,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class NumericStatisticsCollector extends StatisticsCollector {
-    public enum NumericType {
-        INTEGERS,
-        FLOATS
-    }
+    private final boolean isFloatType;
 
-    private final NumericType numericType;
-
-    private int elementsCount;
     private BigDecimal totalSum = BigDecimal.ZERO;
 
     private BigDecimal minimumValue;
@@ -22,66 +16,47 @@ public class NumericStatisticsCollector extends StatisticsCollector {
     private BigDecimal maximumValue;
     private String maximumOriginalLine;
 
-    public NumericStatisticsCollector(Configuration configuration, NumericType numericType) {
+    public NumericStatisticsCollector(Configuration configuration, boolean isFloatType) {
         super(configuration);
-        this.numericType = numericType;
+        this.isFloatType = isFloatType;
     }
 
     @Override
-    public void process(String line) {
-        if (!configuration.shouldPrintStatistics()) {
-            return;
+    protected void collectAdditionalStatistics(String line) {
+        final BigDecimal value = isFloatType
+                ? new BigDecimal(line.trim().replace(',', '.'))
+                : new BigDecimal(line.trim());
+
+        totalSum = totalSum.add(value);
+
+        if (minimumValue == null || value.compareTo(minimumValue) < 0) {
+            minimumValue = value;
+            minimumOriginalLine = line;
         }
 
-        final BigDecimal value;
-
-        try {
-            value = (numericType == NumericType.FLOATS)
-                    ? new BigDecimal(line.trim().replace(',', '.'))
-                    : new BigDecimal(line.trim());
-        } catch (NumberFormatException e) {
-            System.err.printf("Пропущена некорректная числовая строка (%s)%n", line);
-            return;
-        }
-
-        elementsCount++;
-
-        if (configuration.isFullStatistics()) {
-            totalSum = totalSum.add(value);
-
-            if (minimumValue == null || value.compareTo(minimumValue) < 0) {
-                minimumValue = value;
-                minimumOriginalLine = line;
-            }
-
-            if (maximumValue == null || value.compareTo(maximumValue) > 0) {
-                maximumValue = value;
-                maximumOriginalLine = line;
-            }
+        if (maximumValue == null || value.compareTo(maximumValue) > 0) {
+            maximumValue = value;
+            maximumOriginalLine = line;
         }
     }
 
     @Override
-    public int getElementsCount() {
-        return elementsCount;
+    protected void appendAdditionalStatistics(StringBuilder stringBuilder) {
+        stringBuilder.append("\t\t\tМинимальное значение: ")
+                .append(minimumOriginalLine)
+                .append(SEPARATOR)
+                .append("\t\t\tМаксимальное значение: ")
+                .append(maximumOriginalLine)
+                .append(SEPARATOR)
+                .append("\t\t\tСумма: ")
+                .append(totalSum)
+                .append(SEPARATOR)
+                .append("\t\t\tСреднее значение: ")
+                .append(calculateAverage());
     }
 
-    public BigDecimal getTotalSum() {
-        return totalSum;
-    }
-
-    public BigDecimal calculateAverage() {
-        return elementsCount == 0
-                ? BigDecimal.ZERO
-                : totalSum.divide(BigDecimal.valueOf(elementsCount), 10, RoundingMode.HALF_UP)
+    private BigDecimal calculateAverage() {
+        return totalSum.divide(BigDecimal.valueOf(elementsCount), 10, RoundingMode.HALF_UP)
                 .stripTrailingZeros();
-    }
-
-    public String getMinimumOriginalLine() {
-        return minimumOriginalLine;
-    }
-
-    public String getMaximumOriginalLine() {
-        return maximumOriginalLine;
     }
 }
