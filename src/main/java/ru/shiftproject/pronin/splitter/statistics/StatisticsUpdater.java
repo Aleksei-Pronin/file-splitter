@@ -18,8 +18,10 @@ public class StatisticsUpdater {
         this.statisticsCollectorsByType = statisticsCollectorsByType;
     }
 
-    public void update(DataType dataType, String line) {
+    public void update(String line) {
         if (configuration.shouldPrintStatistics()) {
+            DataType dataType = DataType.determineDataType(line);
+
             if (!statisticsCollectorsByType.containsKey(dataType)) {
                 statisticsCollectorsByType.put(
                         dataType,

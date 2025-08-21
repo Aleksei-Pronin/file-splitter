@@ -20,7 +20,9 @@ public class FileLineWriter implements AutoCloseable {
         this.configuration = configuration;
     }
 
-    public void write(DataType dataType, String line) throws IOException {
+    public void write(String line) throws IOException {
+        DataType dataType = DataType.determineDataType(line);
+
         if (!writersByType.containsKey(dataType)) {
             writersByType.put(
                     dataType,
