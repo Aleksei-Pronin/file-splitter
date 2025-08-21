@@ -1,6 +1,5 @@
 package ru.shiftproject.pronin.splitter.processor;
 
-import ru.shiftproject.pronin.splitter.datatype.DataType;
 import ru.shiftproject.pronin.splitter.statistics.StatisticsUpdater;
 
 import java.io.BufferedReader;
@@ -8,7 +7,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class FileLineSplitter {
+public final class FileLineSplitter {
+    private FileLineSplitter() {
+    }
+
     public static void splitByType(Path inputFile,
                                    FileLineWriter lineWriter,
                                    StatisticsUpdater statisticsUpdater
@@ -21,10 +23,8 @@ public class FileLineSplitter {
                     continue;
                 }
 
-                DataType dataType = DataType.determineDataType(line);
-
-                lineWriter.write(dataType, line);
-                statisticsUpdater.update(dataType, line);
+                lineWriter.write(line);
+                statisticsUpdater.update(line);
             }
         }
     }

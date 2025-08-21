@@ -6,7 +6,10 @@ import ru.shiftproject.pronin.splitter.statistics.collector.NumericStatisticsCol
 import ru.shiftproject.pronin.splitter.statistics.collector.StatisticsCollector;
 import ru.shiftproject.pronin.splitter.statistics.collector.StringStatisticsCollector;
 
-public class StatisticsCollectorCreator {
+public final class StatisticsCollectorCreator {
+    private StatisticsCollectorCreator() {
+    }
+
     public static StatisticsCollector create(DataType dataType, Configuration configuration) {
         return switch (dataType) {
             case INTEGERS -> new NumericStatisticsCollector(

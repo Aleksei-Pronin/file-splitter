@@ -12,7 +12,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class FileProcessor {
-    public static void process(Configuration configuration) throws IOException {
+    public void process(Configuration configuration) throws IOException {
         Map<DataType, StatisticsCollector> statisticsCollectorsByType = new EnumMap<>(DataType.class);
 
         try (FileLineWriter lineWriter = new FileLineWriter(configuration)) {
@@ -21,7 +21,7 @@ public class FileProcessor {
                     statisticsCollectorsByType
             );
 
-            for (Path inputFile : configuration.getInputFiles()) {
+            for (Path inputFile : configuration.inputFiles()) {
                 FileLineSplitter.splitByType(
                         inputFile,
                         lineWriter,
@@ -31,7 +31,7 @@ public class FileProcessor {
 
             if (configuration.shouldPrintStatistics()
                     && !statisticsCollectorsByType.isEmpty()) {
-                StatisticsReportPrinter.print(
+                new StatisticsReportPrinter(System.out).print(
                         configuration,
                         statisticsCollectorsByType
                 );

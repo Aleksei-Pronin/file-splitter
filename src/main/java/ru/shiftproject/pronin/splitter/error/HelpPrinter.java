@@ -1,6 +1,9 @@
 package ru.shiftproject.pronin.splitter.error;
 
-public class HelpPrinter {
+public final class HelpPrinter {
+    private HelpPrinter() {
+    }
+
     public static void printHelp() {
         System.out.print("""
                 Инструкция по запуску

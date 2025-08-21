@@ -1,7 +1,9 @@
 package ru.shiftproject.pronin.splitter.error;
 
-public class ErrorHandler {
-    public enum ErrorCode {
+public interface ErrorHandler {
+    int handleError(Exception e, ErrorCode errorCode);
+
+    enum ErrorCode {
         ARGUMENTS_ERROR(1, "Ошибка параметров"),
         FILE_SYSTEM_ERROR(2, "Ошибка работы с файловой системой"),
         IO_ERROR(3, "Ошибка ввода-вывода"),
@@ -22,18 +24,5 @@ public class ErrorHandler {
         public String getDescription() {
             return description;
         }
-    }
-
-    public static void handleError(Exception e, ErrorCode errorCode) {
-        String message = (e != null && e.getMessage() != null)
-                ? e.getMessage()
-                : "Неизвестная ошибка";
-        System.err.println(errorCode.getDescription() + ": " + message);
-
-        if (e instanceof IllegalArgumentException) {
-            HelpPrinter.printHelp();
-        }
-
-        System.exit(errorCode.getExitCode());
     }
 }

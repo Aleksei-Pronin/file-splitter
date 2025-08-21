@@ -2,10 +2,10 @@ package ru.shiftproject.pronin.splitter.config;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class ArgumentParser {
-    private final Configuration configuration = new Configuration();
-
     public Configuration parseArgs(String[] args) throws IOException {
         if (args.length == 0) {
             throw new IllegalArgumentException(
@@ -13,15 +13,28 @@ public class ArgumentParser {
             );
         }
 
+        Path outputDirectory = Paths.get(".");
+        String outputFilePrefix = "";
+        boolean appendMode = false;
+        boolean shortStatistics = false;
+        boolean fullStatistics = false;
+        Set<Path> inputFiles = new LinkedHashSet<>();
+
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
 
             switch (arg.toLowerCase()) {
-                case "-o" -> i = handleOutputPath(args, i);
-                case "-p" -> i = handlePrefix(args, i);
-                case "-a" -> configuration.enableAppendMode();
-                case "-s" -> configuration.enableShortStatistics();
-                case "-f" -> configuration.enableFullStatistics();
+                case "-o" -> {
+                    outputDirectory = parseOutputDirectory(args, i);
+                    i++;
+                }
+                case "-p" -> {
+                    outputFilePrefix = parsePrefix(args, i);
+                    i++;
+                }
+                case "-a" -> appendMode = true;
+                case "-s" -> shortStatistics = true;
+                case "-f" -> fullStatistics = true;
                 default -> {
                     if (arg.startsWith("-")) {
                         throw new IllegalArgumentException(
@@ -29,18 +42,37 @@ public class ArgumentParser {
                         );
                     }
 
-                    handleInputFile(arg);
+                    if (arg.isBlank()) {
+                        throw new IllegalArgumentException(
+                                "имя входного файла не может быть пустым"
+                        );
+                    }
+
+                    inputFiles.add(PathValidator.checkReadableFile(Path.of(arg)));
                 }
             }
         }
 
-        if (configuration.getInputFiles().isEmpty()) {
+        if (inputFiles.isEmpty()) {
             throw new IllegalArgumentException(
                     "не указаны входные файлы"
             );
         }
 
-        return configuration;
+        if (shortStatistics && fullStatistics) {
+            throw new IllegalArgumentException(
+                    "опции -s и -f взаимоисключающие"
+            );
+        }
+
+        return new Configuration(
+                outputDirectory,
+                outputFilePrefix,
+                appendMode,
+                shortStatistics,
+                fullStatistics,
+                inputFiles
+        );
     }
 
     private String getNextArgument(String[] args, int index, String option, String argumentDescription) {
@@ -61,63 +93,20 @@ public class ArgumentParser {
         return args[nextIndex];
     }
 
-    private int handleOutputPath(String[] args, int index) throws IOException {
-        Path outputPath = Paths.get(
-                getNextArgument(args, index, "-o", "путь к выходной директории")
+    private Path parseOutputDirectory(String[] args, int index) throws IOException {
+        return PathValidator.checkWritableDirectory(
+                Path.of(
+                        getNextArgument(
+                                args,
+                                index,
+                                "-o",
+                                "путь к выходной директории"
+                        )
+                )
         );
-
-        if (Files.exists(outputPath) && !Files.isDirectory(outputPath)) {
-            throw new NotDirectoryException(
-                    String.format("указанный путь существует, но не является директорией (%s)", outputPath)
-            );
-        }
-
-        Files.createDirectories(outputPath);
-
-        if (!Files.isWritable(outputPath)) {
-            throw new AccessDeniedException(
-                    String.format("нет прав на запись в директорию (%s)", outputPath)
-            );
-        }
-
-        configuration.setOutputDirectory(outputPath);
-        return index + 1;
     }
 
-    private int handlePrefix(String[] args, int index) {
-        configuration.setOutputFilePrefix(
-                getNextArgument(args, index, "-p", "префикс имени файла")
-        );
-        return index + 1;
-    }
-
-    private void handleInputFile(String filePath) throws IOException {
-        if (filePath.isBlank()) {
-            throw new IllegalArgumentException(
-                    "имя входного файла не может быть пустым"
-            );
-        }
-
-        Path path = Paths.get(filePath);
-
-        if (!Files.exists(path)) {
-            throw new NoSuchFileException(
-                    String.format("входной файл не найден (%s)", filePath)
-            );
-        }
-
-        if (!Files.isRegularFile(path)) {
-            throw new FileSystemException(
-                    String.format("указанный путь существует, не является файлом (%s)", filePath)
-            );
-        }
-
-        if (!Files.isReadable(path)) {
-            throw new AccessDeniedException(
-                    String.format("нет прав на чтение файла (%s)", filePath)
-            );
-        }
-
-        configuration.addInputFile(path);
+    private String parsePrefix(String[] args, int index) {
+        return getNextArgument(args, index, "-p", "префикс имени файла");
     }
 }

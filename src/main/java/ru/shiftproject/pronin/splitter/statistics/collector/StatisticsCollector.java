@@ -14,7 +14,8 @@ public abstract class StatisticsCollector {
 
     public void collect(String line) {
         elementsCount++;
-        if (configuration.isFullStatistics()) {
+
+        if (configuration.fullStatistics()) {
             collectAdditionalStatistics(line);
         }
     }
@@ -22,7 +23,7 @@ public abstract class StatisticsCollector {
     public String buildStatistics() {
         StringBuilder stringBuilder = startBuilding(elementsCount);
 
-        if (configuration.isFullStatistics()) {
+        if (configuration.fullStatistics()) {
             appendAdditionalStatisticsTitle(stringBuilder);
             appendAdditionalStatistics(stringBuilder);
         }
