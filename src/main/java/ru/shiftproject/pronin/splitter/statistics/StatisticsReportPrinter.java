@@ -16,7 +16,7 @@ public class StatisticsReportPrinter {
     }
 
     public void print(Configuration configuration,
-                             Map<DataType, StatisticsCollector> statisticsCollectorsByType) {
+                      Map<DataType, StatisticsCollector> statisticsCollectorsByType) {
         for (DataType dataType : DataType.values()) {
             StatisticsCollector statisticsCollector = statisticsCollectorsByType.get(dataType);
 

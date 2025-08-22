@@ -26,6 +26,10 @@ public final class FileLineSplitter {
                 lineWriter.write(line);
                 statisticsUpdater.update(line);
             }
+        } catch (IOException e) {
+            throw new IOException(
+                    String.format("ошибка при обработке файла (%s)", inputFile)
+            );
         }
     }
 }

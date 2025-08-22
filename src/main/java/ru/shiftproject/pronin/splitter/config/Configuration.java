@@ -1,7 +1,7 @@
 package ru.shiftproject.pronin.splitter.config;
 
 import java.nio.file.Path;
-import java.util.Set;
+import java.util.List;
 
 public record Configuration(
         Path outputDirectory,
@@ -9,10 +9,10 @@ public record Configuration(
         boolean appendMode,
         boolean shortStatistics,
         boolean fullStatistics,
-        Set<Path> inputFiles
+        List<Path> inputFiles
 ) {
     public Configuration {
-        inputFiles = Set.copyOf(inputFiles);
+        inputFiles = List.copyOf(inputFiles);
     }
 
     public boolean shouldPrintStatistics() {

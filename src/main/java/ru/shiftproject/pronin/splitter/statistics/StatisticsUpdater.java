@@ -22,17 +22,13 @@ public class StatisticsUpdater {
         if (configuration.shouldPrintStatistics()) {
             DataType dataType = DataType.determineDataType(line);
 
-            if (!statisticsCollectorsByType.containsKey(dataType)) {
-                statisticsCollectorsByType.put(
-                        dataType,
-                        StatisticsCollectorCreator.create(
-                                dataType,
-                                configuration
-                        )
-                );
-            }
-
-            statisticsCollectorsByType.get(dataType).collect(line);
+            statisticsCollectorsByType.computeIfAbsent(
+                    dataType,
+                    type -> StatisticsCollectorCreator.create(
+                            type,
+                            configuration
+                    )
+            ).collect(line);
         }
     }
 }

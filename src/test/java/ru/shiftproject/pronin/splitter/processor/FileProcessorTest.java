@@ -3,6 +3,7 @@ package ru.shiftproject.pronin.splitter.processor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.shiftproject.pronin.splitter.config.ArgumentParser;
 import ru.shiftproject.pronin.splitter.config.Configuration;
 
 import java.io.ByteArrayOutputStream;
@@ -62,27 +63,32 @@ public class FileProcessorTest {
             boolean shortStats,
             boolean fullStats
     ) throws IOException {
-        Configuration configuration = new Configuration();
-        configuration.setOutputDirectory(outputDirectory);
-        configuration.setOutputFilePrefix("test-");
+        List<String> args = new ArrayList<>();
+
+        args.add("-o");
+        args.add(outputDirectory.toString());
+        args.add("-p");
+        args.add("test-");
 
         if (appendMode) {
-            configuration.enableAppendMode();
+            args.add("-a");
         }
 
         if (shortStats) {
-            configuration.enableShortStatistics();
+            args.add("-s");
         }
 
         if (fullStats) {
-            configuration.enableFullStatistics();
+            args.add("-f");
         }
 
         for (Path file : inputFiles) {
-            configuration.addInputFile(file);
+            args.add(file.toString());
         }
 
-        FileProcessor.process(configuration);
+        Configuration configuration = new ArgumentParser().parseArgs(args.toArray(new String[0]));
+
+        new FileProcessor().process(configuration);
     }
 
     private void processInputFiles(boolean appendMode) throws IOException {

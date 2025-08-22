@@ -7,7 +7,7 @@ public final class PathValidator {
     private PathValidator() {
     }
 
-    static Path checkWritableDirectory(Path path) throws IOException {
+    static Path ensureWritableDirectory(Path path) throws IOException {
         if (Files.exists(path) && !Files.isDirectory(path)) {
             throw new NotDirectoryException(
                     String.format("указанный путь существует, но не является директорией (%s)", path));
@@ -23,7 +23,7 @@ public final class PathValidator {
         return path.toAbsolutePath().normalize();
     }
 
-    static Path checkReadableFile(Path path) throws IOException {
+    static Path ensureReadableFile(Path path) throws IOException {
         if (!Files.exists(path)) {
             throw new NoSuchFileException(
                     String.format("входной файл не найден (%s)", path)

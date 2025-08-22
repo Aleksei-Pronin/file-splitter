@@ -37,13 +37,13 @@ public class ArgumentParserTest {
                 input1.toString(), input2.toString()
         });
 
-        assertEquals(outputDirectory, configuration.getOutputDirectory());
-        assertEquals("prefix_", configuration.getOutputFilePrefix());
-        assertFalse(configuration.isShortStatistics());
-        assertTrue(configuration.isFullStatistics());
-        assertTrue(configuration.isAppendMode());
-        assertEquals(2, configuration.getInputFiles().size());
-        assertTrue(configuration.getInputFiles().containsAll(Set.of(input1, input2)));
+        assertEquals(outputDirectory, configuration.outputDirectory());
+        assertEquals("prefix_", configuration.outputFilePrefix());
+        assertFalse(configuration.shortStatistics());
+        assertTrue(configuration.fullStatistics());
+        assertTrue(configuration.appendMode());
+        assertEquals(2, configuration.inputFiles().size());
+        assertTrue(configuration.inputFiles().containsAll(Set.of(input1, input2)));
     }
 
     @Test
@@ -59,13 +59,13 @@ public class ArgumentParserTest {
                 input1.toString(), input2.toString()
         });
 
-        assertEquals(outputDirectory, configuration.getOutputDirectory());
-        assertEquals("prefix_", configuration.getOutputFilePrefix());
-        assertTrue(configuration.isShortStatistics());
-        assertFalse(configuration.isFullStatistics());
-        assertFalse(configuration.isAppendMode());
-        assertEquals(2, configuration.getInputFiles().size());
-        assertTrue(configuration.getInputFiles().containsAll(Set.of(input1, input2)));
+        assertEquals(outputDirectory, configuration.outputDirectory());
+        assertEquals("prefix_", configuration.outputFilePrefix());
+        assertTrue(configuration.shortStatistics());
+        assertFalse(configuration.fullStatistics());
+        assertFalse(configuration.appendMode());
+        assertEquals(2, configuration.inputFiles().size());
+        assertTrue(configuration.inputFiles().containsAll(Set.of(input1, input2)));
     }
 
     @Test
@@ -84,9 +84,9 @@ public class ArgumentParserTest {
 
         assertTrue(Files.exists(newOutputDir));
         assertTrue(Files.isDirectory(newOutputDir));
-        assertEquals(newOutputDir, configuration.getOutputDirectory());
-        assertEquals(1, configuration.getInputFiles().size());
-        assertTrue(configuration.getInputFiles().contains(input));
+        assertEquals(newOutputDir, configuration.outputDirectory());
+        assertEquals(1, configuration.inputFiles().size());
+        assertTrue(configuration.inputFiles().contains(input));
     }
 
     @Test

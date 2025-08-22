@@ -2,7 +2,9 @@ package ru.shiftproject.pronin.splitter.config;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ArgumentParser {
@@ -18,7 +20,7 @@ public class ArgumentParser {
         boolean appendMode = false;
         boolean shortStatistics = false;
         boolean fullStatistics = false;
-        Set<Path> inputFiles = new LinkedHashSet<>();
+        Set<Path> inputFilesSet = new LinkedHashSet<>();
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -48,12 +50,12 @@ public class ArgumentParser {
                         );
                     }
 
-                    inputFiles.add(PathValidator.checkReadableFile(Path.of(arg)));
+                    inputFilesSet.add(PathValidator.ensureReadableFile(Path.of(arg)));
                 }
             }
         }
 
-        if (inputFiles.isEmpty()) {
+        if (inputFilesSet.isEmpty()) {
             throw new IllegalArgumentException(
                     "не указаны входные файлы"
             );
@@ -64,6 +66,8 @@ public class ArgumentParser {
                     "опции -s и -f взаимоисключающие"
             );
         }
+
+        List<Path> inputFiles = new ArrayList<>(inputFilesSet);
 
         return new Configuration(
                 outputDirectory,
@@ -94,7 +98,7 @@ public class ArgumentParser {
     }
 
     private Path parseOutputDirectory(String[] args, int index) throws IOException {
-        return PathValidator.checkWritableDirectory(
+        return PathValidator.ensureWritableDirectory(
                 Path.of(
                         getNextArgument(
                                 args,
